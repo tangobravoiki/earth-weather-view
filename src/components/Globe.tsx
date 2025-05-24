@@ -1,7 +1,7 @@
 
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Sphere, useTexture } from '@react-three/drei';
-import { useRef, useState, useCallback } from 'react';
+import { OrbitControls, Sphere } from '@react-three/drei';
+import { useRef, useCallback } from 'react';
 import { Vector3, Mesh } from 'three';
 import * as THREE from 'three';
 
@@ -12,9 +12,6 @@ interface GlobeProps {
 
 function EarthSphere({ onLocationClick, selectedPosition }: GlobeProps) {
   const meshRef = useRef<Mesh>(null);
-  
-  // Using a high-quality Earth texture URL
-  const earthTexture = useTexture('/earth-texture.jpg');
   
   const handleClick = useCallback((event: any) => {
     event.stopPropagation();
@@ -30,10 +27,10 @@ function EarthSphere({ onLocationClick, selectedPosition }: GlobeProps) {
 
   return (
     <group>
-      {/* Main Earth sphere */}
+      {/* Main Earth sphere with a blue-green color to represent Earth */}
       <Sphere ref={meshRef} args={[2, 64, 32]} onClick={handleClick}>
         <meshPhongMaterial 
-          map={earthTexture} 
+          color="#2E8B57"
           shininess={0.1}
           specular="#222222"
         />
