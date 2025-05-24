@@ -1,9 +1,8 @@
 
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Sphere } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { useRef, useCallback } from 'react';
-import { Vector3, Mesh } from 'three';
-import * as THREE from 'three';
+import { Vector3, Mesh, SphereGeometry, MeshPhongMaterial, MeshBasicMaterial } from 'three';
 
 interface GlobeProps {
   onLocationClick: (lat: number, lon: number, position: Vector3) => void;
@@ -22,35 +21,39 @@ function EarthSphere({ onLocationClick, selectedPosition }: GlobeProps) {
     const lat = Math.asin(point.y / radius) * (180 / Math.PI);
     const lon = Math.atan2(point.z, point.x) * (180 / Math.PI);
     
+    console.log(`Globe clicked at lat: ${lat}, lon: ${lon}`);
     onLocationClick(lat, lon, point);
   }, [onLocationClick]);
 
   return (
     <group>
-      {/* Main Earth sphere with a blue-green color to represent Earth */}
-      <Sphere ref={meshRef} args={[2, 64, 32]} onClick={handleClick}>
+      {/* Main Earth sphere */}
+      <mesh ref={meshRef} onClick={handleClick}>
+        <sphereGeometry args={[2, 64, 32]} />
         <meshPhongMaterial 
           color="#2E8B57"
           shininess={0.1}
           specular="#222222"
         />
-      </Sphere>
+      </mesh>
       
       {/* Atmospheric glow effect */}
-      <Sphere args={[2.05, 64, 32]}>
+      <mesh>
+        <sphereGeometry args={[2.05, 64, 32]} />
         <meshBasicMaterial 
           color="#87CEEB" 
           transparent 
           opacity={0.1}
-          side={THREE.BackSide}
+          side={2} // THREE.BackSide as number
         />
-      </Sphere>
+      </mesh>
       
       {/* Location marker */}
       {selectedPosition && (
-        <Sphere args={[0.02, 16, 16]} position={selectedPosition}>
+        <mesh position={selectedPosition}>
+          <sphereGeometry args={[0.02, 16, 16]} />
           <meshBasicMaterial color="#ff4444" />
-        </Sphere>
+        </mesh>
       )}
     </group>
   );
