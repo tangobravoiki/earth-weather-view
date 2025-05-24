@@ -1,8 +1,8 @@
 
-import { Canvas, useLoader } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { useRef, useCallback } from 'react';
-import { Vector3, Mesh, TextureLoader } from 'three';
+import { useRef, useCallback, useMemo } from 'react';
+import { Vector3, Mesh, CanvasTexture } from 'three';
 
 interface GlobeProps {
   onLocationClick: (lat: number, lon: number, position: Vector3) => void;
@@ -12,8 +12,46 @@ interface GlobeProps {
 function EarthSphere({ onLocationClick, selectedPosition }: GlobeProps) {
   const meshRef = useRef<Mesh>(null);
   
-  // Earth texture yükleme
-  const earthTexture = useLoader(TextureLoader, '/earth-texture.jpg');
+  // Procedural earth texture oluşturma
+  const earthTexture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 256;
+    const context = canvas.getContext('2d')!;
+    
+    // Mavi okyanus arka planı
+    context.fillStyle = '#1e40af';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Yeşil kara parçaları (basit kıtalar)
+    context.fillStyle = '#22c55e';
+    
+    // Kuzey Amerika
+    context.fillRect(50, 80, 80, 60);
+    context.fillRect(100, 70, 40, 30);
+    
+    // Güney Amerika
+    context.fillRect(80, 140, 30, 80);
+    
+    // Avrupa
+    context.fillRect(200, 60, 40, 40);
+    
+    // Afrika
+    context.fillRect(220, 100, 50, 100);
+    
+    // Asya
+    context.fillRect(280, 50, 120, 80);
+    context.fillRect(350, 130, 60, 40);
+    
+    // Avustralya
+    context.fillRect(380, 180, 50, 30);
+    
+    // Bazı adalar
+    context.fillRect(420, 120, 15, 10);
+    context.fillRect(450, 90, 20, 15);
+    
+    return new CanvasTexture(canvas);
+  }, []);
   
   const handleClick = useCallback((event: any) => {
     event.stopPropagation();
